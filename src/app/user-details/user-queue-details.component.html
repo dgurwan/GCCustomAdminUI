@@ -1,0 +1,21 @@
+<div class="queue-details">
+  <div class="queue-switch">
+    <!--<input type="checkbox" [checked]="queue?.joined?true:false" [hidden]="!hidden">-->
+    <label class="switch" id="switch">
+      <input type="checkbox" [checked]="queue?.joined" (click)="toogleActivation(user?.id)">
+      <span class="slider round"></span>
+    </label>
+
+  </div>
+  <div class="queue-name">
+    <div>{{queue?.name}}</div>
+    <div>{{queue?.joined}}</div>
+    <div class="small">{{queue?.id}} </div>
+  </div>
+
+  <ng-template #loadingIndicator>
+    <div class="spinner">
+      <img src="assets/loading.svg" alt="Loading..." srcset="">
+    </div>
+  </ng-template>
+</div>

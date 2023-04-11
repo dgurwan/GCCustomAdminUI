@@ -1,0 +1,18 @@
+<div class="container">
+  <div>
+    <select
+      name="division"
+      id="division" #division
+      (change)="onDivisionChange(division.value)"
+    >
+      <option
+        *ngFor="let division of divisions"
+        [value]="division.id"
+      >
+        {{division.Name}}
+      </option>
+    </select>
+    <button (click)="">filter</button>
+  </div>
+  
+</div>

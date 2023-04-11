@@ -1,0 +1,108 @@
+div.queue-details {
+  border: 1px solid #ccc;
+  margin-top: 10px;
+  padding: 12px 30px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.queue-observations {
+  display: flex;
+  align-items: baseline;
+}
+
+.queue-name {
+  flex-grow: 4;
+}
+
+.queue-switch {
+  margin-right: 30px;
+}
+
+.total {
+  margin-right: 30px;
+}
+
+button.logout-agents {
+  padding: 10px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+
+button.logout-agents:disabled {
+  cursor:default;
+}
+
+
+button.logout-agents:hover:not([disabled]){
+  background-color: #ff8888;
+  border-color: white;
+  color: white;
+}
+
+
+label {
+  margin: 1rem 0;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 17px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #333;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 13px;
+  width: 13px;
+  left: 2px;
+  bottom: 2px;
+  background-color: #fff;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: #57D53B;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #7f7ff1;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(13px);
+  -ms-transform: translateX(13px);
+  transform: translateX(13px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}

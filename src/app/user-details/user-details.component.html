@@ -1,0 +1,61 @@
+<button class="btn-go-back" (click)="goBack()">
+  Go Back
+</button>
+
+<div *ngIf="userDetails; else userDetailsUnavailable">
+  <h2>{{userDetails.name}}</h2>
+
+  <div class="user-details">
+    <img class="user-avatar" [src]="userAvatar">
+
+    <div class="user-right-section">
+      <div class="user-properties">
+        <div>Id: {{userDetails.id}}</div>
+        <div>Email: {{userDetails.email}}</div>
+        <div>Title: {{userDetails.title || 'N/A'}}</div>
+      </div>
+
+      <app-presence-picker [user]="userDetails"></app-presence-picker>
+    </div>
+  </div>
+
+  <div class="container">
+  <div class="text-center mt-5">
+    <div class="row">
+      <div class="col-md-6">
+        <ul class="list-group">
+          <li class="list-group-item">
+            <input type="checkbox" [(ngModel)]="masterSelected" name="list_name" value="m1"
+              (change)="checkUncheckAll()" /> <strong>Select/ Unselect All</strong>
+          </li>
+        </ul>
+        <ul class="list-group">
+          <li class="list-group-item" *ngFor="let item of checklist">
+            <input type="checkbox" [(ngModel)]="item.isSelected" name="list_name" value="{{item.id}}"
+              (change)="isAllSelected()" />
+            {{item.value}} | {{item.isSelected}}
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <code>{{checkedList}}</code>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+  <hr>
+
+  <div *ngIf="userQueues">
+    <h3>User Queues ({{userQueues.length}})</h3>
+    <app-user-queue-details *ngFor="let queue of userQueues" [queue]=queue [user]=userDetails [hidden]="masterSelected"></app-user-queue-details>
+  </div>
+</div>
+
+<ng-template #userDetailsUnavailable>
+  <div class="spinner">
+    <img src="assets/loading.svg" alt="Loading..." srcset="">
+  </div>
+</ng-template>

@@ -1,0 +1,37 @@
+<div *ngIf="userDetails; else userDetailsUnavailable">
+  <div class="user-info">
+    <img class="user-avatar" [src]="userAvatar">
+    <div class="general">
+      <div class="greeting" ><H2 class="name">Hi, {{userDetails.name}}!</H2></div>
+      <div><span>{{userDetails.title || 'N/A'}}</span></div>
+      <div><span>{{userDetails.department || 'N/A'}}</span></div>
+
+    </div>
+
+    <div>
+      <app-presence-picker [user]="userDetails"></app-presence-picker>
+    </div>
+
+  </div>
+
+  <hr>
+
+
+
+  <h4>Let's look at some details about yourself...</h4>
+  <div>Id: {{userDetails.id}}</div>
+  <div>Name: {{userDetails.name}}</div>
+  <div>Email: {{userDetails.email}}</div>
+
+
+
+</div>
+
+
+
+
+<ng-template #userDetailsUnavailable>
+  <div class="spinner">
+    <img src="assets/loading.svg" alt="Loading..." srcset="">
+  </div>
+</ng-template>

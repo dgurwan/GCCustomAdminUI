@@ -1,0 +1,25 @@
+<div class="header">
+  <img src="assets/yuri.yeti.png" alt="Yuri Smiling" srcset=""><h1>{{title}}</h1>
+</div>
+
+<nav id="main-nav">
+  <ul>
+    <li><a routerLink="/home">Home</a></li>
+    <li><a routerLink="/agentmanager">Users</a></li>
+    <li><a routerLink="/queues">Queues</a></li>
+    <li><a routerLink="/triggers">Triggers</a></li>
+    <li><a routerLink="/datatables">Datatables</a></li>
+  </ul>
+</nav>
+
+
+<main>
+  <div *ngIf="isAuthorized; else notAuthorized">
+    <router-outlet></router-outlet>
+  </div>
+  <ng-template #notAuthorized>
+    <div class="spinner">
+      <img src="assets/loading.svg" alt="Loading..." srcset="">
+    </div>
+  </ng-template>
+</main>

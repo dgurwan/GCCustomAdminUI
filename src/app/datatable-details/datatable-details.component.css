@@ -1,0 +1,18 @@
+div.datatable-details {
+  border: 1px solid #ccc;
+  margin-top: 10px;
+  padding: 12px 30px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.datatable-observations {
+  display: flex;
+  align-items: baseline;
+}
+
+.datatable-name {
+  flex-grow: 4;
+}

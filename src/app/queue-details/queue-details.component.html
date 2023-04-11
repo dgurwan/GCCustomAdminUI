@@ -1,0 +1,29 @@
+<div class="queue-details">
+  <div *ngIf="user;" class="queue-switch">
+    <!--<input type="checkbox" [checked]="queue?.joined?true:false" [hidden]="!hidden">-->
+    <label class="switch" id="switch">
+      <input type="checkbox" [checked]="queue?.joined" (click)="toogleActivation(user.id)">
+      <span class="slider round"></span>
+    </label>
+
+  </div>
+  <div class="queue-name">
+    <div>{{queue?.name}}</div>
+    <div>{{queue?.joined}}</div>
+    <div class="small">{{queue?.id}}</div>
+  </div>
+  <div *ngIf="!fetching && !user; else loadingIndicator" class="queue-observations">
+    <div class="onqueue">OnQueue: {{this.onQueueAgents}}</div>
+    <div class="total">Total: {{this.totalAgents}}</div>
+    <div>
+      <button [disabled]="!totalAgents" class="logout-agents" (click)="logoutAgents()">
+        Log Out All Agents
+      </button>
+    </div>
+  </div>
+  <ng-template #loadingIndicator>
+    <div class="spinner">
+      <img src="assets/loading.svg" alt="Loading..." srcset="">
+    </div>
+  </ng-template>
+</div>

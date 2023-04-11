@@ -1,0 +1,5 @@
+*.dat
+results/
+.angular
+dist
+node_modules

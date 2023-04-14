@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "genesys-cloud-sample": {
+    "CustomAdminUI": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:application": {
@@ -23,7 +23,7 @@
                 "externals": "prepend"
               }
             },
-            "outputPath": "dist/genesys-cloud-sample",
+            "outputPath": "dist/CustomAdminUI",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -78,10 +78,10 @@
           "builder": "@angular-builders/custom-webpack:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "genesys-cloud-sample:build:production"
+              "browserTarget": "CustomAdminUI:build:production"
             },
             "development": {
-              "browserTarget": "genesys-cloud-sample:build:development"
+              "browserTarget": "CustomAdminUI:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -89,7 +89,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "genesys-cloud-sample:build"
+            "browserTarget": "CustomAdminUI:build"
           }
         },
         "test": {

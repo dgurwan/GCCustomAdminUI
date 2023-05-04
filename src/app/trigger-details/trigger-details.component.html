@@ -1,25 +1,39 @@
 <div class="trigger-details">
   <div class="trigger-switch">
-    <!--<input type="checkbox" [checked]="trigger?.joined?true:false" [hidden]="!hidden">-->
-    <label class="switch" id="switch">
-      <input type="checkbox" [checked]="trigger?.enabled" (click)="toogleActivation(trigger)">
-      <span class="slider round"></span>
-    </label>
+        <mat-slide-toggle [checked]="trigger?.enabled" (change)="toogleActivation(trigger)" ></mat-slide-toggle>
   </div>
 
-  <div class="trigger-name">
-    <div>{{trigger?.name}}</div>
-    <div class="small">id: {{trigger?.id}}</div>
+  <div name="test" class="trigger-name">
+      <div class="fw-semibold"><u>Name</u></div>
+    <div class="fw-semibold">{{trigger.name}}</div>
+    <div class="small">{{trigger.id}}&nbsp;
+      <a class="copy" [cdkCopyToClipboard]="trigger.id">
+        <fa-icon [icon]="faCopy" size="1x"></fa-icon>
+      </a>
+    </div>
   </div>
 
   <div class="trigger-Topic">
-    <div>Topic</div>
+    <div class="fw-semibold"><u>Topic Name</u></div>
     <div class="small">{{trigger?.topicName}}</div>
   </div>
 
   <div class="trigger-Workflow">
-    <div>Workflow</div>
-      <div class="small">{{trigger?.target?.id}}</div>
+    <div class="fw-semibold"><u>Workflow</u></div>
+    <div class="fw-semibold">TODO </div>
+      <div class="small">{{trigger.target.id}}
+      <a class="copy" [cdkCopyToClipboard]="trigger.target.id">
+        <fa-icon [icon]="faCopy" size="1x"></fa-icon>
+      </a>
+      </div>
+  </div>
+
+  <div class="trigger-actions">
+    <div class="fw-semibold"><u>Actions</u></div>
+      <div class="small"><span>Edit</span></div>
+      <div class="small">
+    <span><i class="fa trash-can"></i></span>
+    <a class="delete" (click)="deleteTrigger(trigger)">Delete</a></div>
   </div>
 
   <ng-template #loadingIndicator>

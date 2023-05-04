@@ -137,36 +137,6 @@ export class GenesysCloudService {
     );
   }
 
-  getFlowsDatatables(datatatableId: string): Observable<platformClient.Models.DataTable> {
-    return from(this.architectApi.getFlowsDatatable(datatatableId))
-  }
-
-
-  getNotificationsAvailabletopics(): Observable<platformClient.Models.AvailableTopic[]> {
-      let opts = {
-          "expand": [], // [String] | Which fields, if any, to expand
-          "includePreview": true // Boolean | Whether or not to include Preview topics
-      };
-
-      return from(this.notificationsApi.getNotificationsAvailabletopics(opts))
-      .pipe(
-        map(data => data.entities || [])
-      );;
-    }
-
-  getTriggertopics(): Observable<string[]> {
-    let opts = {
-'before': "", // String | The cursor that points to the start of the set of entities that has been returned.
-'after': "", // String | The cursor that points to the end of the set of entities that has been returned.
-'pageSize': "" // String | Number of entities to return. Maximum of 200.
-};
-
-        return from(this.processAutomationApi.getProcessautomationTriggersTopics(opts))
-        .pipe(
-          map(data => data.entities || [])
-        );;
-      }
-
   setUserPresence(userId: string, presenceId: string): Observable<platformClient.Models.UserPresence> {
     return from(this.presenceApi.patchUserPresencesPurecloud(
       userId,
@@ -205,26 +175,6 @@ export class GenesysCloudService {
   }
 
 
-
-
-
-  searchTriggers(term: string): Observable<platformClient.Models.Trigger[]> {
-
-    let opts = {
-      'before': "", // String | The cursor that points to the start of the set of entities that has been returned.
-      'after': "", // String | The cursor that points to the end of the set of entities that has been returned.
-      'pageSize': "", // String | Number of entities to return. Maximum of 200.
-      'topicName': term, // String | Topic name(s). Separated by commas
-      //'enabled': true, // Boolean | Boolean indicating desired enabled state of triggers
-      'hasDelayBy': false // Boolean | Boolean to filter based on delayBySeconds being set in triggers. Default returns all, true returns only those with delayBySeconds set, false returns those without delayBySeconds set.
-    };
-
-    return from(this.processAutomationApi.getProcessautomationTriggers(opts))
-    .pipe(
-      map(data => data.entities || [])
-    );;
-  }
-
   searchUsers(term: string): Observable<platformClient.Models.User[]> {
     if (!term.trim()) {
       return of([]);
@@ -247,6 +197,12 @@ export class GenesysCloudService {
       .pipe(map(data => data.results || []));
   }
 
+  // DataTable functions
+
+  getFlowsDatatables(datatatableId: string): Observable<platformClient.Models.DataTable> {
+    return from(this.architectApi.getFlowsDatatable(datatatableId))
+  }
+
   searchDatatables(term: string): Observable<platformClient.Models.DataTablesDomainEntityListing[]> {
 
     return from(this.architectApi.getFlowsDatatables({
@@ -257,6 +213,7 @@ export class GenesysCloudService {
       );
   }
 
+  // Queues function
   searchQueues(term: string): Observable<platformClient.Models.Queue[]> {
     return from(this.routingApi.getRoutingQueues({
       pageSize: 10, name: `*${term}*`,
@@ -274,23 +231,85 @@ export class GenesysCloudService {
       );
   }
 
+  // Trigger functions
+
+  getNotificationsAvailabletopics(): Observable<platformClient.Models.AvailableTopic[]> {
+    let opts = {
+      "expand": [], // [String] | Which fields, if any, to expand
+      "includePreview": true // Boolean | Whether or not to include Preview topics
+    };
+
+    return from(this.notificationsApi.getNotificationsAvailabletopics(opts))
+      .pipe(
+        map(data => data.entities || [])
+      );;
+  }
+
+  getTriggertopics(): Observable<string[]> {
+    let opts = {
+      'before': "", // String | The cursor that points to the start of the set of entities that has been returned.
+      'after': "", // String | The cursor that points to the end of the set of entities that has been returned.
+      'pageSize': "" // String | Number of entities to return. Maximum of 200.
+    };
+
+    return from(this.processAutomationApi.getProcessautomationTriggersTopics(opts))
+      .pipe(
+        map(data => data.entities || [])
+      );;
+  }
+
+  searchTriggers(term: string): Observable<platformClient.Models.Trigger[]> {
+
+    let opts = {
+      'before': "", // String | The cursor that points to the start of the set of entities that has been returned.
+      'after': "", // String | The cursor that points to the end of the set of entities that has been returned.
+      'pageSize': "", // String | Number of entities to return. Maximum of 200.
+      'topicName': term, // String | Topic name(s). Separated by commas
+      //'enabled': true, // Boolean | Boolean indicating desired enabled state of triggers
+      'hasDelayBy': false // Boolean | Boolean to filter based on delayBySeconds being set in triggers. Default returns all, true returns only those with delayBySeconds set, false returns those without delayBySeconds set.
+    };
+
+    return from(this.processAutomationApi.getProcessautomationTriggers(opts))
+      .pipe(
+        map(data => data.entities || [])
+      );;
+  }
+
+  createTrigger(name: string, topicName: string): Observable<platformClient.Models.Trigger> {
+    let body = {
+      name: name,
+      topicName: topicName,
+      enabled: true,
+      target: {
+        type: "workflow",
+        id: "788ac0b1-d14c-45f4-997e-01c66c2af303"
+      },
+    }; // Object | Input used to create a Trigger.
+
+    // Create a Trigger
+    return from(this.processAutomationApi.postProcessautomationTriggers(body))
+  }
+
   updateTrigger(enabled: boolean, currentTrigger: platformClient.Models.Trigger): Observable<platformClient.Models.Trigger> {
-    if (!currentTrigger?.id) throw new Error('Empty queue');
-      currentTrigger.enabled = enabled;
+    if (!currentTrigger ?.id) throw new Error('Empty trigger');
+    currentTrigger.enabled = enabled;
 
-      let body = {
-        version: currentTrigger.version!,
-        name: currentTrigger.name!,
-        topicName: currentTrigger.topicName!,
-        "enabled": enabled,
-        target: currentTrigger.target!
-      }; // Object | Input to update Trigger. (topicName cannot be updated, a new trigger must be created to use a new topicName)
+    let body = {
+      version: currentTrigger.version!,
+      name: currentTrigger.name!,
+      topicName: currentTrigger.topicName!,
+      "enabled": enabled,
+      target: currentTrigger.target!
+    }; // Object | Input to update Trigger. (topicName cannot be updated, a new trigger must be created to use a new topicName)
 
-      return from(this.processAutomationApi.putProcessautomationTrigger(currentTrigger.id, body))
-        .pipe(
-          map(data => data || [])
-        );
+    return from(this.processAutomationApi.putProcessautomationTrigger(currentTrigger.id, body));
 
+  }
+
+  deleteTrigger(triggerId: string) {
+    let body = triggerId;
+    // Delete a Trigger
+    return from(this.processAutomationApi.deleteProcessautomationTrigger(body))
   }
 
 }

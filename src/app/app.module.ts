@@ -4,7 +4,10 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from  '@angular/platform-browser/animations';
+
+
 import { UserDetailsComponent } from './user-details/user-details.component';
 import { UserQueueDetailsComponent } from './user-details/user-queue-details.component';
 import { AgentManagerComponent } from './agent-manager/agent-manager.component';
@@ -18,7 +21,23 @@ import { DatatableListPageComponent } from './datatable-list-page/datatable-list
 import { TriggerListPageComponent } from './trigger-list-page/trigger-list-page.component';
 import { TriggerDetailsComponent } from './trigger-details/trigger-details.component';
 
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
+import { ClipboardModule } from '@angular/cdk/clipboard';
+
+
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+
+
 import { NgSelectModule } from '@ng-select/ng-select';
+
+import { ModalComponent } from './modal/_component';
+
+import { SearchFilterPipe } from './shared/pipes/search-filter.pipe';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
 
 @NgModule({
   declarations: [
@@ -34,14 +53,24 @@ import { NgSelectModule } from '@ng-select/ng-select';
     DatatableDetailsComponent,
     DatatableListPageComponent,
     TriggerListPageComponent,
-    TriggerDetailsComponent
+    TriggerDetailsComponent,
+    ModalComponent,
+    SearchFilterPipe // declaration of search filetr pipe
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     NgSelectModule,
-    FormsModule
+    FormsModule,
+    FontAwesomeModule,
+    MatSlideToggleModule,
+    MatFormFieldModule,
+    MatInputModule,
+    ReactiveFormsModule,
+    BrowserAnimationsModule,
+    ClipboardModule,
+    NgbModule
   ],
   providers: [],
   bootstrap: [AppComponent]

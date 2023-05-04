@@ -1,7 +1,13 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { GenesysCloudService } from '../genesys-cloud.service';
+import { mergeMap, map, tap } from 'rxjs/operators';
+
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
+
 
 import * as platformClient from 'purecloud-platform-client-v2';
+
 
 @Component({
   selector: 'app-trigger-details',
@@ -9,8 +15,13 @@ import * as platformClient from 'purecloud-platform-client-v2';
   styleUrls: ['./trigger-details.component.css']
 })
 export class TriggerDetailsComponent implements OnInit, OnChanges {
-    @Input() trigger?: platformClient.Models.Trigger;
-    enabled?: boolean = false;
+  @Input() trigger: platformClient.Models.Trigger;
+  @Output() deleted = new EventEmitter();
+
+  enabled: boolean = false;
+  version: number;
+
+  faCopy = faCopy;
 
   fetching = true;
 
@@ -18,12 +29,19 @@ export class TriggerDetailsComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
+    this.enabled = this.trigger.enabled;
+    this.version = this.trigger.version;
+
     this.getTriggerObservations();
-      this.enabled = this.trigger?.enabled;
+
   }
 
   ngOnChanges(changes: SimpleChanges) {
-  //  console.log(changes);
+    //console.log(changes);
+  }
+
+  currentId(): string{
+    return this.trigger.id ?? ""
   }
 
   getTriggerObservations() {
@@ -32,18 +50,21 @@ export class TriggerDetailsComponent implements OnInit, OnChanges {
   }
 
   toogleActivation(trigger) {
-    console.log("TriggerID : "+trigger?.Id);
-    if (!this.trigger?.id) throw new Error('Empty queue');
+    if (!this.trigger.id) throw new Error('Empty Trigger');
     this.fetching = true;
     this.enabled = !this.enabled;
 
     this.genesysCloudService.updateTrigger(this.enabled, trigger).subscribe(data => {
-      console.log(data);
+      this.trigger!.version = data.version;
     });
   }
 
+  deleteTrigger(trigger): void {
+    this.genesysCloudService.deleteTrigger(trigger.id)
+      .subscribe(data => {
+        this.deleted.emit();
+      });
 
-
-
-
+    console.log("Waiting for deletion ");
+  }
 }

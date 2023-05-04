@@ -1,12 +1,24 @@
 <div>
+  <button class="btn btn-default create-button" (click)="modalService.open('modalTrigger')">
+    <fa-icon [icon]="faCirclePlus" size="2x"></fa-icon>New
+  </button>
+
+<div class="searchFilter">
+    <span class="fw-semibold"><u>Filters</u></span>
+
   <form action="#" autocomplete="off">
-    <ng-select [closeOnSelect]="true" [multiple]="true" [(ngModel)]="selectedTopic" class="custom" placeholder="Topic Name" (change)="searchTrigger($event)">
-       <ng-option *ngFor="let topic of topics | async"  [value]="topic">{{topic}} </ng-option>
+    <ng-select [closeOnSelect]="true" [multiple]="true" [(ngModel)]="selectedTopic" [ngModelOptions]="{standalone: true}" class="custom" placeholder="Topic Name" (change)="searchTrigger($event)">
+      <ng-option *ngFor="let topic of topics | async" [value]="topic">{{topic}} </ng-option>
     </ng-select>
 
-
-
   </form>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Trigger name</mat-label>
+    <input matInput placeholder="search trigger" [(ngModel)]="searchText" >
+  </mat-form-field>
+
+</div>
 
   <div *ngIf="fetching">
     <div class="spinner">
@@ -16,11 +28,78 @@
 
 
   <div class="triggers-container">
-    <div
-      class="trigger-list-entry"
-      *ngFor="let trigger of triggers$ | async"
-    >
-      <app-trigger-details [trigger]="trigger"></app-trigger-details>
+    <div class="trigger-list-entry" *ngFor="let trigger of triggers$ | async | searchFilter: searchText" >
+      <app-trigger-details [trigger]="trigger" (deleted)="refresh($event)"></app-trigger-details>
     </div>
   </div>
-</div>
+
+
+  <!-- Modal -->
+
+  <jw-modal id="modalTrigger">
+
+    <div class="modalTrigger-container">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Add a trigger</h5>
+          <a (click)="modalService.close();" class="close"></a>
+      </div>
+
+
+
+      <div class="modal-body">
+
+        <form [formGroup]="triggerForm" (ngSubmit)="onSubmit()">
+          <mat-form-field appearance="fill">
+            <mat-label>Enter a name</mat-label>
+            <input matInput placeholder="Put your trigger name" required formControlName="triggerName">
+          </mat-form-field>
+
+          <ng-select  required formControlName="selectedTopicCreation" [closeOnSelect]="true" [multiple]="false" [(ngModel)]="selectedTopicCreation" class="custom" placeholder="Topic Name">
+            <ng-option *ngFor="let topic of topics | async" [value]="topic">{{topic}} </ng-option>
+          </ng-select>
+
+          <p>Form Status: {{ triggerForm.status }}</p>
+
+
+          <div class="modal-footer">
+            <button type="submit" [disabled]="triggerForm.invalid" class="btn btn-primary">Create</button>
+          </div>
+
+
+        </form>
+      </div>
+
+
+
+    </div>
+
+  </jw-modal>
+
+  <jw-modal id="modalDeleteTrigger">
+
+    <div class="modalTrigger-container">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Are you sure ?</h5>
+          <a (click)="modalService.close();" class="close"></a>
+      </div>
+
+
+
+      <div class="modal-body">
+
+        <form [formGroup]="triggerForm" (ngSubmit)="onSubmit()">
+
+          <div class="modal-footer">
+            <button type="submit" [disabled]="triggerForm.invalid" class="btn btn-primary">Create</button>
+          </div>
+
+        </form>
+      </div>
+
+
+
+    </div>
+
+  </jw-modal>

@@ -1,3 +1,5 @@
+
+
 div.trigger-details {
   border: 1px solid #ccc;
   margin-top: 10px;
@@ -6,6 +8,18 @@ div.trigger-details {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+
+  color: var(--bs-body-color);
+}
+
+
+a {
+  color: #dc4081;
+  cursor: pointer;
+}
+
+a.copy{
+  color: grey !important;
 }
 
 .trigger-observations {
@@ -17,9 +31,41 @@ div.trigger-details {
   flex-grow: 4;
 }
 
+.dark-theme .trigger-name {
+  color: white !important;
+}
+
 .trigger-switch {
   margin-right: 30px;
 }
+
+button.logout-agents {
+  padding: 10px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+
+button.logout-agents:disabled {
+  cursor:default;
+}
+
+
+button.logout-agents:hover:not([disabled]){
+  background-color: #ff8888;
+  border-color: white;
+  color: white;
+}
+
+
+label {
+  margin: 1rem 0;
+}
+
+.trigger-switch {
+  margin-right: 30px;
+}
+
 
 button.logout-agents {
   padding: 10px;

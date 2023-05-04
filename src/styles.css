@@ -1,4 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
+
+@import "~bootstrap/dist/css/bootstrap.css";
+@import "~font-awesome/css/font-awesome.css";
+
 body {
   margin: 0;
   padding: 0;
@@ -23,11 +27,7 @@ input[type=text] {
   margin: 8px 0;
   transition: 0.3s;
 
-  background-image: url('~src/assets/search-icon.png');
-  background-color: white;
-  background-position: 8px 8px;
-  background-repeat: no-repeat;
-  
+
   font-size: 18px;
   color:#555;
 

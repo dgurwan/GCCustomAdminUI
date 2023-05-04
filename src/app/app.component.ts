@@ -2,21 +2,28 @@ import { Component, OnInit } from '@angular/core';
 import { GenesysCloudService } from './genesys-cloud.service';
 import { ActivatedRoute } from '@angular/router';
 
+import { ModalService } from './modal/_services';
+
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
   title = 'EMEA PS - Admin Tool';
   isAuthorized = false;
 
-  constructor(
-    private genesysCloudService : GenesysCloudService,
-    private route: ActivatedRoute)
-    {}
+  setMode = false;
 
-  ngOnInit(){
+  setDark = false;
+
+  constructor(
+    private genesysCloudService: GenesysCloudService,
+    private route: ActivatedRoute,
+    protected modalService: ModalService) { }
+
+  ngOnInit() {
     console.log(this.route.snapshot)
     this.genesysCloudService.isAuthorized.subscribe(isAuthorized => {
       this.isAuthorized = isAuthorized;
@@ -35,5 +42,16 @@ export class AppComponent implements OnInit {
           console.log('Succesfully logged in.')
         });
     });
+  }
+
+  receiveMode($event) {
+    this.setMode = $event;
+    console.log("MODE", this.setMode);
+  }
+
+  onChangeToggle() {
+    this.setDark = !this.setDark;
+    this.receiveMode(this.setDark)
+    console.log(this.setDark);
   }
 }

@@ -46,8 +46,8 @@ export class UserQueueDetailsComponent implements OnInit, OnChanges {
     this.joined = !this.joined;
     this.genesysCloudService.activateFromQueue(this.joined, userId, this.queue).subscribe(data => {
       console.log(data);
-      if (data[0].joined) console.log(`Join ${data[0].name}`);
-      else console.log(`Leave ${data[0].name}`);
+      if (data[0].joined) console.log(`Left ${data[0].name}`);
+      else console.log(`joined ${data[0].name}`);
       this.getQueueObservations();
     });
   }

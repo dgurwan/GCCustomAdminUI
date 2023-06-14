@@ -1,13 +1,12 @@
 import { Component, Input, OnInit, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
-import { GenesysCloudService } from '../genesys-cloud.service';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { mergeMap, map, tap } from 'rxjs/operators';
 
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCopy } from '@fortawesome/free-solid-svg-icons';
-
+import { GenesysCloudService } from '../genesys-cloud.service';
 
 import * as platformClient from 'purecloud-platform-client-v2';
 
+import { ModalService } from '../modal/_services';
 
 @Component({
   selector: 'app-trigger-details',
@@ -16,17 +15,21 @@ import * as platformClient from 'purecloud-platform-client-v2';
 })
 export class TriggerDetailsComponent implements OnInit, OnChanges {
   @Input() trigger: platformClient.Models.Trigger;
+  @Input() workflowName: String;
+
   @Output() deleted = new EventEmitter();
+  @Output() deletionConfirmation = new EventEmitter();
+  @Output() editRequest = new EventEmitter();
 
   enabled: boolean = false;
   version: number;
 
-  faCopy = faCopy;
-
   fetching = true;
 
-  constructor(private genesysCloudService: GenesysCloudService) {
-  }
+  constructor(
+    private genesysCloudService: GenesysCloudService,
+    protected modalService: ModalService
+  ) { }
 
   ngOnInit(): void {
     this.enabled = this.trigger.enabled;
@@ -37,12 +40,10 @@ export class TriggerDetailsComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    //console.log(changes);
+  //  console.log(changes);
   }
 
-  currentId(): string{
-    return this.trigger.id ?? ""
-  }
+
 
   getTriggerObservations() {
     if (!this.trigger) throw Error('Invalid trigger.');
@@ -59,8 +60,21 @@ export class TriggerDetailsComponent implements OnInit, OnChanges {
     });
   }
 
-  deleteTrigger(trigger): void {
-    this.genesysCloudService.deleteTrigger(trigger.id)
+  confirmDeleteTrigger(triggerId): void {
+    console.log("triggerID :", triggerId);
+    this.deletionConfirmation.emit(triggerId);
+    console.log("Deletion Confirmaton Required ");
+  }
+
+  editTrigger(trigger): void {
+    console.log("trigger :", this.trigger);
+    this.editRequest.emit(this.trigger);
+    console.log("Edit Trigger Required ");
+  }
+
+
+  deleteTrigger(triggerId): void {
+    this.genesysCloudService.deleteTrigger(triggerId)
       .subscribe(data => {
         this.deleted.emit();
       });

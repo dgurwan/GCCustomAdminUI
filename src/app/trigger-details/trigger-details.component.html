@@ -1,39 +1,41 @@
 <div class="trigger-details">
   <div class="trigger-switch">
-        <mat-slide-toggle [checked]="trigger?.enabled" (change)="toogleActivation(trigger)" ></mat-slide-toggle>
+    <mat-slide-toggle [checked]="trigger?.enabled" (change)="toogleActivation(trigger)"></mat-slide-toggle>
   </div>
 
   <div name="test" class="trigger-name">
-      <div class="fw-semibold"><u>Name</u></div>
+    <div class="fw-semibold"><u>Name</u></div>
     <div class="fw-semibold">{{trigger.name}}</div>
     <div class="small">{{trigger.id}}&nbsp;
-      <a class="copy" [cdkCopyToClipboard]="trigger.id">
-        <fa-icon [icon]="faCopy" size="1x"></fa-icon>
+      <a  [cdkCopyToClipboard]="trigger.id">
+          <i class="bi bi-clipboard"></i>
       </a>
     </div>
   </div>
 
   <div class="trigger-Topic">
     <div class="fw-semibold"><u>Topic Name</u></div>
-    <div class="small">{{trigger?.topicName}}</div>
+    <div class="">{{trigger?.topicName}}</div>
   </div>
 
   <div class="trigger-Workflow">
     <div class="fw-semibold"><u>Workflow</u></div>
-    <div class="fw-semibold">TODO </div>
-      <div class="small">{{trigger.target.id}}
-      <a class="copy" [cdkCopyToClipboard]="trigger.target.id">
-        <fa-icon [icon]="faCopy" size="1x"></fa-icon>
+    <div class="fw-semibold">{{workflowName}} </div>
+    <div class="small">{{trigger.target.id}}
+      <a [cdkCopyToClipboard]="trigger.target.id">
+        <i class="bi bi-clipboard"></i>
       </a>
-      </div>
+    </div>
   </div>
 
   <div class="trigger-actions">
-    <div class="fw-semibold"><u>Actions</u></div>
-      <div class="small"><span>Edit</span></div>
-      <div class="small">
-    <span><i class="fa trash-can"></i></span>
-    <a class="delete" (click)="deleteTrigger(trigger)">Delete</a></div>
+    <div class="fw-semibold"><u>Action(s)</u></div>
+  <!--  <div class="small">
+        <a class="edit" (click)="editTrigger(trigger.id)"><span><i class="bi bi-pencil"></i></span></a>
+    </div>-->
+    <div class="small">
+      <a class="delete" (click)="confirmDeleteTrigger(trigger.id)"><span><i class="bi bi-trash"></i></span></a>
+    </div>
   </div>
 
   <ng-template #loadingIndicator>

@@ -5,14 +5,13 @@ import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { GenesysCloudService } from '../genesys-cloud.service';
 import * as platformClient from 'purecloud-platform-client-v2';
-import { triggerModel } from '../trigger-details/triggerModel';
+
 import { debounceTime, distinctUntilChanged, switchMap, tap, map } from 'rxjs/operators';
 
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCirclePlus } from '@fortawesome/free-solid-svg-icons';
-import { FormControl, Validators, FormGroup } from '@angular/forms';
+import { FormControl, Validators, FormGroup, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 import { ModalService } from '../modal/_services';
+
 
 @Component({
   selector: 'app-trigger-list-page',
@@ -22,44 +21,78 @@ import { ModalService } from '../modal/_services';
 
 
 export class TriggerListPageComponent implements OnInit {
+
   triggers$!: Observable<platformClient.Models.Trigger[]>
   searchTerm = new BehaviorSubject<string>('');
   fetching = false;
 
-  faCirclePlus = faCirclePlus;
+  searchTopic!: string;
 
-  selectedTopic!: string;
   topics!: Observable<string[]>;
+  workflowsList!: Observable<platformClient.Models.Flow[]>;
+
+  workflowsMap = new Map();
+
+  //workflowsMap?: Map<string, string>;
 
   searchText: string;
+  errors : string;
+
+
+
+
+  currentTriggerId: string;
+  currentTrigger: Observable<platformClient.Models.Trigger>;
 
 
   triggerForm = new FormGroup({
     triggerName: new FormControl('', Validators.required),
-    selectedTopicCreation:new FormControl('', Validators.required)
+    selectedTopicCreation: new FormControl('', Validators.required),
+    selectedWorkflowCreation: new FormControl('', Validators.required),
+    triggerMatchingCriteria: new FormControl('{\n\"jsonPath\": \"<change here>\",\n \"operator\": \"<change here>\",\n \"value\": \"<change here>\"\n}', [Validators.required, this.validMatchingCriteria()])
   });
 
-selectedTopicCreation!: string;
+  selectedTopicCreation!: string;
+  selectedWorkflowCreation!: string;
 
-  /* getErrorMessage() {
-    if (this.email.hasError('required')) {
-      return 'You must enter a value';
-    }
-
-    return this.email.hasError('email') ? 'Not a valid email' : '';
-  }*/
 
   constructor(
     private genesysCloudService: GenesysCloudService,
     protected modalService: ModalService
   ) { }
 
-
-
   ngOnInit(): void {
 
-    this.searchText ="";
+    this.searchText = "";
+    this.init()
+  }
 
+  async init() {
+    await this.builddWorkflowList();
+    await this.buildTriggersList();
+  }
+
+  validMatchingCriteria(): ValidatorFn {
+  console.log("called ValidatorFn");
+
+  return (control: AbstractControl): ValidationErrors | null => {
+    const error: ValidationErrors = { jsonInvalid: true };
+
+    try {
+      JSON.parse(control.value);
+    } catch (e) {
+      control.setErrors(error);
+      return error;
+    }
+
+    control.setErrors(null);
+    return null;
+  };
+}
+
+
+  buildTriggersList() {
+    console.log("calling buildTriggersData");
     this.triggers$ = this.searchTerm.pipe(
       debounceTime(300),
       distinctUntilChanged(),
@@ -81,6 +114,25 @@ selectedTopicCreation!: string;
       this.searchTerm.next(this.genesysCloudService.lastTriggerSearchValue);
     }
 
+    console.log("End buildTriggersData");
+
+    return Promise.resolve({
+      topics: this.topics
+    });
+  }
+
+  builddWorkflowList() {
+    console.log("calling builddWorkflowData");
+    this.workflowsList = this.genesysCloudService.getWorkflows();
+
+    this.workflowsList.forEach(flows => {
+      flows.forEach(flow => {
+        this.workflowsMap.set(flow.id, flow.name);
+      });
+    });
+    console.log('workflowsMap is ', this.workflowsMap);
+    console.log("End builddWorkflowData");
+
   }
 
   searchTrigger(term: string): void {
@@ -88,21 +140,55 @@ selectedTopicCreation!: string;
     console.log("SearchTrigger - term : ", term);
   }
 
-  createTrigger(name: string | null | undefined, topicName: string): void {
+  createTrigger(name: string | null | undefined, topicName: string, workflowId: string, matchingCriteria: string): void {
     if (name === null || name === undefined) { }
     else {
-      this.genesysCloudService.createTrigger(name, topicName).subscribe(data => {
+      console.log("createTrigger : ", matchingCriteria);
+
+      this.genesysCloudService.createTrigger(name, topicName, workflowId, matchingCriteria).subscribe(data => {
+        // Handle result
+       console.log(data)
+      }, error => {
+        this.errors = error;
+      },
+      () => {
+        // 'onCompleted' callback.
+        // No errors, route to new page here
         this.ngOnInit();
         //this.triggerForm.controls['triggerName'].reset()
         this.triggerForm.reset()
-
       });
     }
   }
 
+  confirmDelete(triggerId) {
+    console.log("Trigger Event deleted received!", triggerId);
+    this.modalService.open("modalDeleteTrigger");
+    this.currentTriggerId = triggerId;
+  }
+
+  deleteTrigger() {
+    console.log("receive : ", this.currentTriggerId);
+    this.genesysCloudService.deleteTrigger(this.currentTriggerId)
+      .subscribe(data => {
+        console.log("Trigger deleted!");
+        this.modalService.close();
+        this.ngOnInit();
+      });
+  }
+
+  editTrigger(trigger) {
+    console.log("Trigger Event edit received!", trigger.name);
+    this.currentTrigger = trigger;
+    this.modalService.open("modalEditTrigger");
+  }
+
+  getFlowName(flowId): String {
+    return this.workflowsMap.get(flowId);
+  }
+
   refresh(event) {
-    console.log("Trigger Event received!");
-    console.log(this.selectedTopic);
+    console.log("Trigger Event deletionConfirmation received!");
     this.ngOnInit();
   }
 
@@ -116,7 +202,7 @@ selectedTopicCreation!: string;
         if (this.triggerForm === null || this.triggerForm === undefined) {
           console.log("name is null or undefined");
         }
-        this.createTrigger(this.triggerForm.get('triggerName')?.value, this.selectedTopicCreation);
+        this.createTrigger(this.triggerForm.get('triggerName') ?.value, this.selectedTopicCreation, this.selectedWorkflowCreation, this.triggerForm.get('triggerMatchingCriteria') ?.value);
         this.modalService.close();
       }
 

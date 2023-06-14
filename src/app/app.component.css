@@ -9,6 +9,7 @@ body { min-height: 100vh; }
   content:url(../assets/sun-mode.png);
 }
 
+
 .mode-toggle{
   cursor: pointer;
   position: absolute;
@@ -41,7 +42,10 @@ body { min-height: 100vh; }
 
 .dark-theme main{
   background: #2a2b36;
+  color: #ffffffbf;
 }
+
+
 
 .dark-theme #main-nav {
   background: #2a2b36;
@@ -351,6 +355,10 @@ main {
 
 .border-start-warning {
 	border-left-color: #f9b115 !important
+}
+
+.border-start-green {
+	border-left-color: #8fce00 !important
 }
 
 .border-start-success {

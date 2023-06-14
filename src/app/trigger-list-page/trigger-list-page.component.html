@@ -1,24 +1,22 @@
 <div>
-  <button class="btn btn-default create-button" (click)="modalService.open('modalTrigger')">
-    <fa-icon [icon]="faCirclePlus" size="2x"></fa-icon>New
+  <button class="btn" (click)="modalService.open('modalNewTrigger')">
+    <i class="bi bi-plus-circle"></i>&nbsp;New
   </button>
 
-<div class="searchFilter">
+
+  <div class="searchFilter">
     <span class="fw-semibold"><u>Filters</u></span>
 
-  <form action="#" autocomplete="off">
-    <ng-select [closeOnSelect]="true" [multiple]="true" [(ngModel)]="selectedTopic" [ngModelOptions]="{standalone: true}" class="custom" placeholder="Topic Name" (change)="searchTrigger($event)">
+    <ng-select class="custom" [closeOnSelect]="true" [multiple]="true" [(ngModel)]="searchTopic" [ngModelOptions]="{standalone: true}" placeholder="Topic Name" (change)="searchTrigger($event)">
       <ng-option *ngFor="let topic of topics | async" [value]="topic">{{topic}} </ng-option>
     </ng-select>
 
-  </form>
+    <mat-form-field appearance="fill">
+      <mat-label>Trigger Name</mat-label>
+      <input matInput placeholder="Search Trigger Name" [(ngModel)]="searchText">
+    </mat-form-field>
 
-  <mat-form-field appearance="fill">
-    <mat-label>Trigger name</mat-label>
-    <input matInput placeholder="search trigger" [(ngModel)]="searchText" >
-  </mat-form-field>
-
-</div>
+  </div>
 
   <div *ngIf="fetching">
     <div class="spinner">
@@ -27,22 +25,80 @@
   </div>
 
 
+
   <div class="triggers-container">
-    <div class="trigger-list-entry" *ngFor="let trigger of triggers$ | async | searchFilter: searchText" >
-      <app-trigger-details [trigger]="trigger" (deleted)="refresh($event)"></app-trigger-details>
+    <div class="trigger-list-entry" *ngFor="let trigger of triggers$ | async | searchFilter: searchText">
+      <app-trigger-details [trigger]="trigger" [workflowName]="getFlowName(trigger.target.id)" (deletionConfirmation)="confirmDelete($event)" (editRequest)="editTrigger($event)"></app-trigger-details>
     </div>
   </div>
 
 
   <!-- Modal -->
 
-  <jw-modal id="modalTrigger">
+  <jw-modal id="modalNewTrigger">
 
     <div class="modalTrigger-container">
 
       <div class="modal-header">
         <h5 class="modal-title">Add a trigger</h5>
-          <a (click)="modalService.close();" class="close"></a>
+        <a (click)="modalService.close();" class="close"></a>
+      </div>
+
+      <div class="modal-body">
+
+        <form [formGroup]="triggerForm" (ngSubmit)="onSubmit()">
+          <mat-form-field>
+            <mat-label>Enter a name</mat-label>
+            <input matInput placeholder="Put your trigger name" required formControlName="triggerName">
+          </mat-form-field>
+
+          <ng-select required formControlName="selectedTopicCreation" [closeOnSelect]="true" [multiple]="false" [(ngModel)]="selectedTopicCreation" placeholder="Topic Name">
+            <ng-option *ngFor="let topic of topics | async" [value]="topic">{{topic}} </ng-option>
+          </ng-select>
+
+          <ng-select required formControlName="selectedWorkflowCreation" [closeOnSelect]="true" [multiple]="false" [(ngModel)]="selectedWorkflowCreation" placeholder="Workflow Name">
+            <ng-option *ngFor="let workflow of workflowsList | async" [value]="workflow.id">{{workflow.name}} </ng-option>
+          </ng-select>
+
+          <div>
+
+          <!--  <button mat-raised-button (click)="addCriteria(); $event.preventDefault()">
+            <i class="bi-plus-circle"></i>
+          </button>-->
+
+
+          <mat-form-field>
+            <mat-label>Matching Criteria</mat-label>
+            <textarea placeholder="Put your matching Criteria" matInput required jsonFormat formControlName="triggerMatchingCriteria" rows="25"></textarea>
+          </mat-form-field>
+
+          </div>
+
+
+          <p>Form Status: {{ triggerForm.status }}</p>
+
+
+          <div class="modal-footer">
+            <button type="submit" [disabled]="triggerForm.invalid" class="create btn btn-primary">Create</button>
+          </div>
+
+
+        </form>
+      </div>
+
+
+
+    </div>
+
+  </jw-modal>
+
+  <jw-modal id="modalEditTrigger">
+
+    <div class="modalTrigger-container">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Edit trigger</h5>
+        <a (click)="modalService.close();" class="close"></a>
       </div>
 
 
@@ -52,18 +108,23 @@
         <form [formGroup]="triggerForm" (ngSubmit)="onSubmit()">
           <mat-form-field appearance="fill">
             <mat-label>Enter a name</mat-label>
-            <input matInput placeholder="Put your trigger name" required formControlName="triggerName">
+            <input matInput placeholder="Put your trigger name" required name="name">
           </mat-form-field>
 
-          <ng-select  required formControlName="selectedTopicCreation" [closeOnSelect]="true" [multiple]="false" [(ngModel)]="selectedTopicCreation" class="custom" placeholder="Topic Name">
+          <ng-select required formControlName="selectedTopicCreation" [closeOnSelect]="true" [multiple]="false" [(ngModel)]="selectedTopicCreation" class="custom" placeholder="Topic Name">
             <ng-option *ngFor="let topic of topics | async" [value]="topic">{{topic}} </ng-option>
           </ng-select>
+
+          <ng-select required formControlName="selectedWorkflowCreation" [closeOnSelect]="true" [multiple]="false" [(ngModel)]="selectedWorkflowCreation" class="custom" placeholder="Workflow Name">
+            <ng-option *ngFor="let workflow of workflowsList | async" [value]="workflow.id">{{workflow.name}} </ng-option>
+          </ng-select>
+
 
           <p>Form Status: {{ triggerForm.status }}</p>
 
 
           <div class="modal-footer">
-            <button type="submit" [disabled]="triggerForm.invalid" class="btn btn-primary">Create</button>
+            <button type="submit" [disabled]="triggerForm.invalid" class="btn btn-primary">Edit</button>
           </div>
 
 
@@ -81,21 +142,28 @@
     <div class="modalTrigger-container">
 
       <div class="modal-header">
-        <h5 class="modal-title">Are you sure ?</h5>
-          <a (click)="modalService.close();" class="close"></a>
+        <h5 class="modal-title">Are you sure to delete ?</h5>
+        <a (click)="modalService.close();" class="close"></a>
       </div>
 
-
-
       <div class="modal-body">
+        <div class="row">
 
-        <form [formGroup]="triggerForm" (ngSubmit)="onSubmit()">
 
-          <div class="modal-footer">
-            <button type="submit" [disabled]="triggerForm.invalid" class="btn btn-primary">Create</button>
+          <div class="confirm-button">
+            <a class="mr-2">
+              <button class="btn btn-yes" (click)="deleteTrigger();">Yes</button>
+            </a>
+            <a>
+              <button class="btn btn-no" (click)="modalService.close();">No</button>
+            </a>
           </div>
 
-        </form>
+
+        </div>
+        <div class="modal-footer">
+
+        </div>
       </div>
 
 

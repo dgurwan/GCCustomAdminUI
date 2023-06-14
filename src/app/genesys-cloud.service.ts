@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Observable, from, of, BehaviorSubject, forkJoin, EMPTY } from 'rxjs';
-import { mergeMap, map, tap } from 'rxjs/operators';
+import { mergeMap, map, tap,shareReplay,switchMap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import * as platformClient from 'purecloud-platform-client-v2';
-//import { triggerModel } from './trigger-details/triggerModel';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
+
+
 
 // Keys for localStorage
 const LANGUAGE_KEY = 'gc_language';
@@ -27,7 +28,7 @@ export class GenesysCloudService {
 
 
   // Authorization values
-  language: string = 'en-us';
+  language: string = 'en-en';
   environment: string = 'mypurecloud.ie';
   accessToken = '';
   isAuthorized = new BehaviorSubject<boolean>(false);
@@ -35,6 +36,9 @@ export class GenesysCloudService {
   // Cache for presence definitions
   presenceDefinitions = new BehaviorSubject<platformClient.Models.OrganizationPresence[]>([]);
   offlinePresenceId = '';
+
+  // Cache for workflow
+
 
   // Persist search values
   lastUserSearchValue = '';
@@ -245,6 +249,25 @@ export class GenesysCloudService {
       );;
   }
 
+ getWorkflows(): Observable<platformClient.Models.Flow[]> {
+    let opts = {
+      "type": ["workflow"], // [String] | Type
+      "pageNumber": 1, // Number | Page number
+      "pageSize": 200, // Number | Page size
+      "sortOrder": "asc" // String | Sort order
+    };
+
+    // Get a pageable list of flows, filtered by query parameters
+    return from(this.architectApi.getFlows(opts))
+      .pipe(
+        map(data => data.entities || [])
+      );;
+
+
+  }
+
+
+
   getTriggertopics(): Observable<string[]> {
     let opts = {
       'before': "", // String | The cursor that points to the start of the set of entities that has been returned.
@@ -275,19 +298,28 @@ export class GenesysCloudService {
       );;
   }
 
-  createTrigger(name: string, topicName: string): Observable<platformClient.Models.Trigger> {
+  Criteria: string = '{"jsonPath": "attributes.TECH_ROUTING","operator": "Equal","value": "CANCELLED"}';
+
+  createTrigger(name: string, topicName: string, workflowId: string, matchCriteria:string): Observable<platformClient.Models.Trigger> {
     let body = {
       name: name,
       topicName: topicName,
       enabled: true,
       target: {
         type: "workflow",
-        id: "788ac0b1-d14c-45f4-997e-01c66c2af303"
+        id: workflowId
       },
+      matchCriteria: [JSON.parse(matchCriteria)]
     }; // Object | Input used to create a Trigger.
+
+    console.log("GenesysCloudService createTrigger",this.Criteria);
+
+    
+
 
     // Create a Trigger
     return from(this.processAutomationApi.postProcessautomationTriggers(body))
+
   }
 
   updateTrigger(enabled: boolean, currentTrigger: platformClient.Models.Trigger): Observable<platformClient.Models.Trigger> {
@@ -298,7 +330,7 @@ export class GenesysCloudService {
       version: currentTrigger.version!,
       name: currentTrigger.name!,
       topicName: currentTrigger.topicName!,
-      "enabled": enabled,
+      enabled: enabled,
       target: currentTrigger.target!
     }; // Object | Input to update Trigger. (topicName cannot be updated, a new trigger must be created to use a new topicName)
 
@@ -311,5 +343,7 @@ export class GenesysCloudService {
     // Delete a Trigger
     return from(this.processAutomationApi.deleteProcessautomationTrigger(body))
   }
+
+
 
 }

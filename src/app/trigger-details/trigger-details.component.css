@@ -12,10 +12,22 @@ div.trigger-details {
   color: var(--bs-body-color);
 }
 
+.fa{
+  font-size: 50px;
+}
 
 a {
-  color: #dc4081;
   cursor: pointer;
+}
+
+a.edit{
+    color: black;
+    font-size: 1.3rem;
+}
+
+a.delete {
+  color: #dc4081;
+  font-size: 1.5rem;
 }
 
 a.copy{

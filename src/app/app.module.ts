@@ -36,7 +36,10 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { ModalComponent } from './modal/_component';
 
 import { SearchFilterPipe } from './shared/pipes/search-filter.pipe';
+
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
+
 
 
 @NgModule({
@@ -72,7 +75,9 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     ClipboardModule,
     NgbModule
   ],
-  providers: [],
+  providers: [
+    {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'outline'}}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

@@ -14,8 +14,8 @@ export class AppComponent implements OnInit {
   title = 'EMEA PS - Admin Tool';
   isAuthorized = false;
 
-  setMode = false;
 
+  setMode = false;
   setDark = false;
 
   constructor(

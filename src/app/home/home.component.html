@@ -1,5 +1,5 @@
 <div *ngIf="userDetails; else userDetailsUnavailable">
-  <div class="user-info">
+  <div id="user-info" class="user-info">
     <img class="user-avatar" [src]="userAvatar">
     <div class="general">
       <div class="greeting" ><H2 class="name">Hi, {{userDetails.name}}!</H2></div>
@@ -17,7 +17,7 @@
   <hr>
 
 
-<div class="general">
+<div id="user-general" class="general">
   <h4>Let's look at some details about yourself...</h4>
   <div>Id: {{userDetails.id}}</div>
   <div>Name: {{userDetails.name}}</div>
